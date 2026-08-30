@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energym Profile - Bacheca</title>
+
+    <style>
+        /* Layout moderno, pulito e "light" coerente con le altre pagine */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(100% 100% at 50% 0%, #e5e7eb 0%, #cbd5e1 100%);
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1, h2 {
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: #4b5563;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        /* Topbar moderna in stile semi-trasparente frosted-glass light */
+        .topbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            z-index: 999;
+            box-sizing: border-box;
+            border-bottom: 1px solid #d1d5db;
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-link, .nav-link {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #f3f4f6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #d1d5db;
+        }
+
+        .logout-link:hover {
+            color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .nav-link:hover {
+            color: #111827;
+            background: #e5e7eb;
+        }
+
+        /* Pulsante Hamburger Ultra-Compatto Light */
+        .menu-toggle {
+            display: none;
+            background: #f3f4f6;
+            border: 1px solid #cbd5e1;
+            color: #1f2937;
+            font-size: 20px;
+            line-height: 1;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: auto;
+            margin: 0;
+        }
+        .menu-toggle:hover { background: #e5e7eb; }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Chips del profilo con stile coordinato */
+        .profile-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 50px;
+            padding: 6px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .profile-chip:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .profile-name { font-size: 13px; font-weight: 600; color: #374151; }
+
+        /* Dropdown con stile uniforme e ombre profonde */
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #ffffff;
+            color: #1f2937;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #cbd5e1;
+            padding: 20px;
+            min-width: 240px;
+            text-align: left;
+            z-index: 200;
+            box-sizing: border-box;
+        }
+
+        .profile-dropdown.open { display: block; }
+
+        .profile-dropdown .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #9ca3af;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .profile-dropdown .value {
+            font-size: 14px;
+            color: #111827;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .profile-dropdown hr {
+            border: none;
+            border-top: 1px solid #f3f4f6;
+            margin: 12px 0;
+        }
+
+        /* Regole responsive per gestire zoom o schermi ridotti */
+        @media (max-width: 1024px) {
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .topbar-right {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 24px;
+                background: #ffffff;
+                border: 1px solid #cbd5e1;
+                border-radius: 16px;
+                padding: 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                min-width: 240px;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+
+            .topbar-right.open {
+                display: flex;
+            }
+
+            /* CHIP COMPATTI E UGUALI */
+            .profile-chip {
+                justify-content: flex-start;
+                width: 100%;
+                box-sizing: border-box;
+                height: 38px;            /* 🔥 più piccolo */
+                padding: 0 10px;
+                align-items: center;
+                border-radius: 12px;
+            }
+
+            /* avatar più piccolo e centrato */
+            .profile-chip .avatar {
+                width: 26px;
+                height: 26px;
+                font-size: 11px;
+                flex: 0 0 26px;
+            }
+
+            /* testo più compatto */
+            .profile-chip .profile-name {
+                font-size: 12px;
+                line-height: 1;
+            }
+
+            /* elimina spazi strani del flex */
+            .profile-chip .profile-dropdown {
+                margin-left: auto;
+            }
+
+            /* dropdown full width */
+            .profile-dropdown {
+                right: 0;
+                top: calc(100% + 5px);
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+        /* Riquadri principali con effetto glassmorphism soft light */
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 22px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03),
+                        0 20px 40px -4px rgba(0, 0, 0, 0.05),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+            width: 280px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+
+            /* MANTENUTA LOGICA ORIGINALE DEL PROMPT */
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between;
+        }
+
+        /* Seleziona i bottoni e i link mascherati da bottone dentro i tre box */
+        .container button,
+        .container a,
+        #noSubContainer button,
+        #noSubContainer a {
+            margin-top: auto !important;
+            display: block !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Rimuove i margini superiori dai paragrafi per evitare blocchi al flexbox */
+        .container p {
+            margin-bottom: 15px;
+            margin-top: 5px;
+        }
+
+        /* Box del meteo interno */
+        .weather-box {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            min-height: 60px;
+            color: #374151;
+            font-size: 13px;
+            line-height: 1.5;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+        }
+
+        /* Bottoni ad alta reattività con micro-interazioni moderne */
+        button {
+            width: 100%;
+            padding: 10px 24px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+        .primary:hover {
+            background: #1d4ed8;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+        }
+        .primary:active { transform: translateY(0); }
+
+        .secondary {
+            background: #f3f4f6;
+            color: #1f2937;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+        }
+        .secondary:hover {
+            background: #e5e7eb;
+            color: #111827;
+            transform: translateY(-1px);
+        }
+        .secondary:active { transform: translateY(0); }
+
+        #weatherResult { margin-top: 15px; font-weight: normal; }
+
+        #weatherDots {
+            margin-top: 8px !important;
+            margin-bottom: 10px !important;
+        }
+
+        /* Griglia della Dashboard */
+        .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;    /* Forza tutti i box ad avere la stessa altezza del più alto */
+            gap: 25px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 30px;
+        }
+
+        .page-content { margin-top: 60px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+        .weekly-scroll {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+
+            overflow-x: auto;
+            padding: 10px 5px;
+
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* nasconde scrollbar (opzionale ma bello) */
+        .weekly-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .day-card {
+            min-width: 230px;
+            max-width: 230px;
+            flex: 0 0 auto;
+
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+
+            padding: 10px;      /* ridotto */
+            box-sizing: border-box;
+
+            scroll-snap-align: start;
+        }
+
+        .day-card h3 {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .day-card div {
+            font-size: 12px;
+        }
+
+        .weather-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d1d5db;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .weather-dot.active {
+            background: #2563eb;
+            transform: scale(1.3);
+        }
+
+        /* riga superiore: meteo */
+        .row-top {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* riga inferiore: abbonamento + tessera */
+        .row-bottom {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .section-divider {
+            width: 80%;
+            max-width: 600px;
+            height: 1px;
+            margin: 10px auto;
+            background: linear-gradient(to right, transparent, #6b7280, transparent);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="logout-link" onclick="logout()">Logout</div>
+            <a href="/home/shop" class="nav-link">🛍️ Vai allo Shop</a>
+        </div>
+
+        <button class="menu-toggle" onclick="toggleMobileMenu(event)">☰</button>
+
+        <div class="topbar-right" id="topbarRight">
+            <div id="topbarSub" class="profile-chip" style="display: none;" onclick="toggleSubDropdown(event)">
+                <span class="profile-name">📋 Il mio abbonamento</span>
+                <div class="profile-dropdown" id="subDropdown">
+                    <div class="label">Piano</div>
+                    <div class="value" id="subPlan">—</div>
+                    <div class="label">Stato</div>
+                    <div class="value" id="subStatus">—</div>
+                    <div class="label">Scadenza</div>
+                    <div class="value" id="subExpiry">—</div>
+                </div>
+            </div>
+
+            <div id="topbarCard" class="profile-chip" style="display: none;" onclick="toggleCardDropdown(event)">
+                <span class="profile-name">💳 La mia tessera</span>
+                <div class="profile-dropdown" id="cardDropdown">
+                    <div class="label">ID Tessera</div>
+                    <div class="value" id="topId">—</div>
+                    <div class="label">Saldo</div>
+                    <div class="value" id="topBalance">—</div>
+                    <div class="label">Scadenza</div>
+                    <div class="value" id="topExpiry">—</div>
+                    <hr>
+                    <button class="primary" onclick="rechargeCard(event)" style="margin-top: 5px; font-size: 13px; padding: 10px; width: 100%;">
+                        💰 Ricarica Saldo
+                    </button>
+                </div>
+            </div>
+
+            <div class="profile-chip" onclick="toggleProfileDropdown(event)">
+                <div class="avatar" id="avatarInitials">?</div>
+                <span class="profile-name" id="profileName">Il mio profilo</span>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="label">ID</div>
+                    <div class="value" id="ddId">—</div>
+                    <div class="label">Username</div>
+                    <div class="value" id="ddUsername">—</div>
+                    <div class="label">Email</div>
+                    <div class="value" id="ddEmail">—</div>
+                    <div class="label">Nome</div>
+                    <div class="value" id="ddName">—</div>
+                    <div class="label">Età</div>
+                    <div class="value" id="ddAge">—</div>
+                    <div class="label">Indirizzo</div>
+                    <div class="value" id="ddAddress">—</div>
+                    <hr>
+                    <div class="label">Iscritto dal</div>
+                    <div class="value" id="ddCreated">—</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <h1>🏋️‍♂️ Energym</h1>
+
+        <div class="section-divider"></div>
+
+        <div class="dashboard-grid">
+
+            <div class="row-top">
+
+                <div class="container">
+                    <h2>Meteo attuale</h2>
+                    <div class="weather-box" id="weatherResult" style="margin:auto;">
+                        Caricamento...
+                    </div>
+                    <button class="primary" onclick="getWeather(true)">Aggiorna Meteo</button>
+                </div>
+
+                <div class="container">
+                    <h2>Previsioni Settimanali</h2>
+
+                    <div id="weeklyWeather" class="weekly-scroll">
+                        Caricamento...
+                    </div>
+
+                    <div id="weatherDots" style="display:flex; justify-content:center; gap:6px; margin-top:12px; margin-bottom:18px;"></div>
+
+                    <button class="primary" onclick="getWeeklyWeather(true)">
+                        Aggiorna Settimana
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="row-bottom">
+
+                <div class="container" id="noSubContainer" style="display: none; flex-direction: column;">
+                    <h2>Abbonamento</h2>
+                    <p style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; margin:20;">
+                        Non hai un abbonamento attivo o è scaduto.
+                    </p>
+                    <button class="primary" onclick="window.location.href='/home/shop'">Scopri i Piani</button>
+                </div>
+
+                <div class="container" id="cardContainer">
+                    <h2>La tua tessera</h2>
+                    <p id="cardSubtitle" style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; margin:20;">
+                        Non hai una tessera personale
+                    </p>
+                    <button class="primary" id="generateBtn" onclick="generateCard()">Ottieni Tessera</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    // Gestione chiusure e aperture incrociate dei Dropdown e menu mobile
+    function toggleMobileMenu(e) {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("topbarRight").classList.toggle("open");
+    }
+
+    function toggleProfileDropdown(e) {
+        e.stopPropagation();
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("profileDropdown").classList.toggle("open");
+    }
+
+    function toggleCardDropdown(e) {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.toggle("open");
+    }
+
+    function toggleSubDropdown(e) {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.toggle("open");
+    }
+
+    document.addEventListener("click", function() {
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("topbarRight").classList.remove("open");
+    });
+
+    async function loadUserProfile() {
+        const cachedUser = sessionStorage.getItem("user_profile");
+        if (cachedUser) {
+            renderUser(JSON.parse(cachedUser));
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/user/me");
+            if (!res.ok) return;
+            const user = await res.json();
+            sessionStorage.setItem("user_profile", JSON.stringify(user));
+            renderUser(user);
+        } catch (e) { console.error(e); }
+    }
+
+    function renderUser(user) {
+        const initials = user.name && user.lastname
+            ? (user.name[0] + user.lastname[0]).toUpperCase()
+            : (user.username?.[0] || "?").toUpperCase();
+
+        document.getElementById("avatarInitials").innerText = initials;
+        document.getElementById("profileName").innerText = "Il mio profilo";
+        document.getElementById("ddId").innerText = user.id ?? "—";
+        document.getElementById("ddUsername").innerText = user.username ?? "—";
+        document.getElementById("ddEmail").innerText = user.email ?? "—";
+        document.getElementById("ddName").innerText = `${user.name ?? ""} ${user.lastname ?? ""}`.trim() || "—";
+        document.getElementById("ddAge").innerText = user.age ?? "—";
+        document.getElementById("ddAddress").innerText = user.address ?? "—";
+        document.getElementById("ddCreated").innerText = user.createdAt ? new Date(user.createdAt).toLocaleString("it-IT") : "—";
+    }
+
+    // Caricamento Gestione Abbonamento
+    async function loadSubscription() {
+        const cachedSub = sessionStorage.getItem("user_subscription");
+        if (cachedSub) {
+            displaySubData(JSON.parse(cachedSub));
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/subscription/mysub");
+            if (res.ok) {
+                const data = await res.json();
+                sessionStorage.setItem("user_subscription", JSON.stringify(data));
+                displaySubData(data);
+            } else {
+                // Se non c'è un abbonamento sul server, forza la visualizzazione del box promemoria
+                const noSubContainer = document.getElementById("noSubContainer");
+                if (noSubContainer) noSubContainer.style.setProperty("display", "flex", "important");
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function displaySubData(sub) {
+        const topbarSub = document.getElementById("topbarSub");
+        const noSubContainer = document.getElementById("noSubContainer");
+        const expiry = new Date(sub.expiresAt);
+
+        if (expiry > new Date() && sub.status === "active") {
+            topbarSub.style.display = "flex";
+            document.getElementById("subPlan").innerText = sub.planName || "Standard";
+            document.getElementById("subStatus").innerText = "🟢 Attivo";
+            document.getElementById("subExpiry").innerText = expiry.toLocaleDateString("it-IT");
+
+            // MODIFICA: Nasconde il riquadro dell'abbonamento sovrascrivendo l'!important del CSS
+            if (noSubContainer) noSubContainer.style.setProperty("display", "none", "important");
+        } else {
+            topbarSub.style.display = "none";
+            // MODIFICA: Mostra il riquadro se l'abbonamento è scaduto o inattivo
+            if (noSubContainer) noSubContainer.style.setProperty("display", "flex", "important");
+        }
+    }
+
+    async function loadCard() {
+        const cachedCard = sessionStorage.getItem("user_card");
+        if (cachedCard) {
+            displayCardData(JSON.parse(cachedCard));
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/card/mycard");
+            if (res.ok) {
+                const data = await res.json();
+                sessionStorage.setItem("user_card", JSON.stringify(data));
+                displayCardData(data);
+            } else {
+                document.getElementById("generateBtn").style.display = "block";
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function displayCardData(card) {
+        const topbarCard = document.getElementById("topbarCard");
+        const expiry = new Date(card.expiresAt);
+        const cardContainer = document.getElementById('cardContainer');
+
+        if (expiry > new Date()) {
+            topbarCard.style.display = "flex";
+            document.getElementById("topId").innerText = card.id;
+            document.getElementById("topBalance").innerText = `€${card.balance}`;
+            document.getElementById("topExpiry").innerText = expiry.toLocaleDateString("it-IT");
+
+            // MODIFICA: Sovrascrive il !important del CSS per nascondere il box
+            if (cardContainer) cardContainer.style.setProperty("display", "none", "important");
+        } else {
+            topbarCard.style.display = "none";
+            if (cardContainer) cardContainer.style.setProperty("display", "flex", "important");
+            document.getElementById("generateBtn").style.display = "block";
+        }
+    }
+
+    async function generateCard() {
+        try {
+            const res = await apiFetch("/api/v1/card/generate", { method: "POST"});
+            if (!res.ok) { return; }
+            const data = await res.json();
+            sessionStorage.setItem("user_card", JSON.stringify(data));
+
+            // MODIFICA: Nasconde immediatamente il box per un feedback istantaneo
+            const cardContainer = document.getElementById('cardContainer');
+            if (cardContainer) cardContainer.style.setProperty("display", "none", "important");
+
+            displayCardData(data);
+        } catch (e) { console.error(e); }
+    }
+
+    async function rechargeCard(e) {
+        if (e) e.stopPropagation();
+        const amount = prompt("Inserisci l'importo da ricaricare (es. 50):", "50");
+        if (amount === null) return;
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            alert("Inserisci un importo valido superiore a 0.");
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/card/recharge", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: parsedAmount })
+            });
+            if (res.ok) {
+                const updatedCard = await res.json();
+                alert(`Ricarica di €${parsedAmount} effettuata!`);
+                sessionStorage.setItem("user_card", JSON.stringify(updatedCard));
+                displayCardData(updatedCard);
+            } else {
+                const err = await res.json();
+                alert(`Errore durante la ricarica: ${err.message || 'Riprova più tardi'}`);
+            }
+        } catch (e) {
+            console.error("Errore ricarica:", e);
+            alert("Errore di connessione. Impossibile ricaricare.");
+        }
+    }
+
+    function logout() {
+        if (!confirm("Effettuare il logout?")) return;
+        apiFetch("/auth/logout", { method: "POST"})
+            .then(res => {
+                if (res.ok) {
+                    sessionStorage.clear();
+                    window.location.href = "/auth/login";
+                }
+            });
+    }
+
+    async function getWeather(forceRefresh = false) {
+        const weatherBox = document.getElementById("weatherResult");
+        const now = new Date().getTime();
+
+        if (!forceRefresh) {
+            const cachedWeather = sessionStorage.getItem("weather_data");
+            const cachedTime = sessionStorage.getItem("weather_timestamp");
+
+            if (cachedWeather && cachedTime && (now - cachedTime < 60000)) {
+                renderWeather(JSON.parse(cachedWeather));
+                return;
+            }
+        }
+
+        weatherBox.innerText = "Caricamento meteo...";
+        try {
+            const res = await apiFetch(`/api/v1/weather/${encodeURIComponent("Taranto")}`);
+
+            if (res.status === 429) {
+                weatherBox.innerHTML = `⚠️ Troppe richieste, riprova tra un minuto!`;
+                return;
+            }
+
+            if (!res.ok) {
+                weatherBox.innerText = "Errore nel recupero meteo";
+                return;
+            }
+
+            const data = await res.json();
+            sessionStorage.setItem("weather_data", JSON.stringify(data));
+            sessionStorage.setItem("weather_timestamp", now.toString());
+            renderWeather(data);
+
+        } catch (e) {
+            weatherBox.innerText = "Errore di connessione";
+            console.error("Errore meteo:", e);
+        }
+    }
+
+
+    async function getWeeklyWeather(forceRefresh = false) {
+        const weeklyBox = document.getElementById("weeklyWeather");
+        const now = new Date().getTime();
+
+        // Controlla cache (valida 5 minuti)
+        if (!forceRefresh) {
+            const cachedWeekly = sessionStorage.getItem("weather_weekly_data");
+            const cachedTime = sessionStorage.getItem("weather_weekly_timestamp");
+
+            if (cachedWeekly && cachedTime && (now - cachedTime < 60 * 60 * 1000)) {
+                renderWeeklyWeather(JSON.parse(cachedWeekly));
+                return;
+            }
+        }
+
+        weeklyBox.innerHTML = "Caricamento previsioni...";
+
+        try {
+            const res = await apiFetch(`/api/v1/weather/weekly/${encodeURIComponent("Taranto")}`);
+
+            if (res.status === 429) {
+                weeklyBox.innerHTML = "⚠️ Troppe richieste, riprova tra un minuto";
+                return;
+            }
+            if (!res.ok) {
+                weeklyBox.innerHTML = "Errore nel recupero";
+                return;
+            }
+
+            const data = await res.json();
+
+            // Salva in cache
+            sessionStorage.setItem("weather_weekly_data", JSON.stringify(data));
+            sessionStorage.setItem("weather_weekly_timestamp", now.toString());
+
+            renderWeeklyWeather(data);
+
+        } catch (e) {
+            console.error(e);
+            weeklyBox.innerHTML = "Errore di connessione";
+        }
+    }
+
+    function renderWeeklyWeather(data) {
+
+        const weeklyBox = document.getElementById("weeklyWeather");
+
+        let html = "";
+
+        data.forecast.forEach(day => {
+
+            html += `
+                <div class="day-card">
+
+                    <h3 style="margin-bottom:10px;">
+                        ${
+                            new Date(day.date)
+                                .toLocaleDateString("it-IT", {
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long"
+                                })
+                        }
+                    </h3>
+
+                    <div style="max-height: 220px; overflow-y: auto;">
+            `;
+
+            day.hourlyForecasts.forEach(hour => {
+
+                html += `
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:6px;
+                        padding:5px 0;
+                        border-bottom:1px solid #f3f4f6;
+                        font-size:12px;
+                        white-space:nowrap;
+                        overflow:hidden;
+                    ">
+                        <div style="flex:1;">${hour.time}</div>
+                        <div style="flex:1; text-align:center;">
+                            <strong>${Math.round(hour.temperature)}°</strong>
+                        </div>
+                        <div style="flex:2; text-align:right; color:#6b7280;">
+                            ${hour.description}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+
+        weeklyBox.innerHTML = html;
+        const dotsContainer = document.getElementById("weatherDots");
+        dotsContainer.innerHTML = "";
+
+        data.forecast.forEach((_, index) => {
+            const dot = document.createElement("div");
+            dot.className = "weather-dot";
+
+            if (index === 0) dot.classList.add("active");
+
+            dot.onclick = () => {
+                const container = document.getElementById("weeklyWeather");
+                const card = container.querySelector(".day-card");
+                const cardWidth = card.offsetWidth + 16;
+
+                container.scrollTo({
+                    left: index * cardWidth,
+                    behavior: "smooth"
+                });
+            };
+
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    const weeklyContainer = document.getElementById("weeklyWeather");
+
+    weeklyContainer.addEventListener("wheel", (e) => {
+        const hasHorizontalScroll =
+            weeklyContainer.scrollWidth > weeklyContainer.clientWidth;
+
+        if (!hasHorizontalScroll) return;
+
+        // SOLO quando si usa rotella verticale
+        if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+
+        e.preventDefault();
+
+        weeklyContainer.scrollBy({
+            left: e.deltaY,
+            behavior: "smooth"
+        });
+    }, { passive: false });
+
+
+    function renderWeather(data) {
+        const weatherBox = document.getElementById("weatherResult");
+        const temp = Math.round(data.temperature);
+        const condition = data.condition.toLowerCase();
+
+        let message = "";
+        if (condition.includes("rain"))       message = "🌧️ Piove, vieni da noi in macchina!";
+        else if (condition.includes("clear")) message = "☀️ Sole! Giornata perfetta per allenarsi!";
+        else if (condition.includes("cloud")) message = "☁️ Nuvoloso, momento ideale!";
+        else if (condition.includes("snow"))  message = "❄️ Nevica! Allenati al caldo da noi!";
+        else                                  message = "🏋️ Sempre il momento giusto!";
+
+        weatherBox.innerHTML = `
+            <div><strong>${data.city}</strong></div>
+            <div style="font-size: 22px; font-weight: 700; color: #111827; margin: 4px 0;">${temp}°C</div>
+            <div style="color: #6b7280;">${data.description}</div>
+            <br><strong style="color: #2563eb;">${message}</strong>
+        `;
+    }
+
+    weeklyContainer.addEventListener("scroll", () => {
+        const cards = document.querySelectorAll(".day-card");
+        const dots = document.querySelectorAll(".weather-dot");
+        if (!cards.length) return;
+
+        const cardWidth = cards[0].offsetWidth + 16;
+        const index = Math.round(weeklyContainer.scrollLeft / cardWidth);
+
+        dots.forEach((d, i) => {
+            d.classList.toggle("active", i === index);
+        });
+    });
+
+    async function apiFetch(url, options = {}) {
+        const config = {
+            credentials: "include",
+            ...options
+        };
+
+        let response = await fetch(url, config);
+
+        // access token scaduto
+        if (response.status === 401) {
+
+            const refreshResponse = await fetch("/auth/refresh", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (refreshResponse.ok) {
+                response = await fetch(url, config);
+            } else {
+                sessionStorage.clear();
+                window.location.href = "/auth/login";
+                return;
+            }
+        }
+
+        return response;
+    }
+
+    window.onload = () => {
+        getWeather();
+        loadUserProfile();
+        loadCard();
+        loadSubscription();
+        getWeeklyWeather();
+    };
+</script>
+</body>
+</html>

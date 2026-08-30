@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energym Shop - Acquisti</title>
+
+    <style>
+        :root{
+            --bg1:#e5e7eb;
+            --bg2:#cbd5e1;
+            --text:#1f2937;
+            --muted:#4b5563;
+            --card:#ffffff;
+            --border:#cbd5e1;
+            --primary:#2563eb;
+            --primaryHover:#1d4ed8;
+            --success:#10b981;
+            --danger:#ef4444;
+            --radius-xl:24px;
+            --radius-lg:16px;
+            --radius-md:12px;
+            --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+            --shadow-md:0 10px 30px rgba(0,0,0,.08);
+        }
+
+        *{
+            box-sizing:border-box;
+        }
+
+        html,body{
+            margin:0;
+            padding:0;
+            width:100%;
+            overflow-x:hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(100% 100% at 50% 0%, var(--bg1) 0%, var(--bg2) 100%);
+            color: var(--text);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:flex-start;
+            min-height:100vh;
+            padding:clamp(16px, 4vw, 40px) clamp(12px, 3vw, 20px);
+        }
+
+        h1,h2{
+            margin:0 0 6px 0;
+            font-weight:700;
+            letter-spacing:-0.5px;
+            color:#111827;
+            font-size:clamp(18px,2.2vw,26px);
+        }
+
+        h2{
+            line-height: 1.3;
+        }
+
+        p{
+            line-height: 1.6;
+        }
+
+        p{
+            margin:0 0 12px 0;
+            color:var(--muted);
+            font-size:clamp(13px,1.4vw,15px);
+        }
+
+        /* TOPBAR */
+        .topbar{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:12px clamp(12px,3vw,24px);
+            background:rgba(255,255,255,.92);
+            backdrop-filter:blur(18px);
+            border-bottom:1px solid #d1d5db;
+            box-shadow:var(--shadow-md);
+            z-index:999;
+        }
+
+        .topbar-left,
+        .topbar-right{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .logout-link,.nav-link{
+            text-decoration:none;
+            font-size:12px;
+            font-weight:600;
+            padding:8px 14px;
+            border-radius:999px;
+            background:#f3f4f6;
+            border:1px solid var(--border);
+            color:var(--muted);
+            white-space:nowrap;
+            cursor: pointer;
+        }
+
+        .logout-link:hover {
+            color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .nav-link:hover {
+            color: #111827;
+            background: #e5e7eb;
+        }
+
+
+
+        .menu-toggle{
+            display:none;
+            border:1px solid var(--border);
+            background:#f3f4f6;
+            padding:6px 10px;
+            border-radius:10px;
+            font-size:18px;
+        }
+
+        /* PROFILE CHIP */
+        .profile-chip{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            background:#fff;
+            border:1px solid var(--border);
+            padding:6px 12px;
+            border-radius:999px;
+            cursor:pointer;
+            position:relative;
+            min-height:36px;
+        }
+
+        .avatar{
+            width:28px;
+            height:28px;
+            border-radius:50%;
+            background:var(--primary);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#fff;
+            font-weight:700;
+            font-size:12px;
+        }
+
+        .profile-name{
+            font-size:12px;
+            font-weight:600;
+            white-space:nowrap;
+        }
+
+        .profile-dropdown{
+            display:none;
+            position:absolute;
+            top:calc(100% + 8px);
+            right:0;
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:var(--radius-lg);
+            box-shadow:var(--shadow-md);
+            padding:16px;
+            min-width:220px;
+            z-index:200;
+        }
+
+        .profile-dropdown.open{display:block;}
+
+        .label{
+            font-size:10px;
+            text-transform:uppercase;
+            color:#9ca3af;
+            margin-top:6px;
+        }
+
+        .value{
+            font-size:13px;
+            margin-bottom:6px;
+            color:#111827;
+        }
+
+        /* LAYOUT CONTAINER */
+        .container{
+            width:min(100%,700px);
+            background:rgba(255,255,255,.85);
+            backdrop-filter:blur(18px);
+            border-radius:var(--radius-xl);
+            padding:clamp(14px,2.5vw,22px);
+            box-shadow:var(--shadow-sm);
+            margin-top:16px;
+        }
+
+        .shopping-container{
+            width:100%;
+            max-width:700px;
+        }
+
+        .section-divider{
+            width:min(100%,700px);
+            height:1px;
+            margin:20px 0;
+            background:linear-gradient(to right, transparent, #6b7280, transparent);
+        }
+
+        /* GRID */
+        .product-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+            gap:16px;
+            margin-top:12px;
+        }
+
+        .product-card{
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:var(--radius-lg);
+            padding:12px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            transition:.2s ease;
+        }
+
+        .product-card:hover{
+            transform:translateY(-3px);
+        }
+
+        .product-name{font-weight:700;font-size:14px;}
+        .product-price{color:var(--success);font-weight:700;font-size:16px;}
+        .product-stock{font-size:12px;color:var(--muted);}
+        .product-duration{font-size:12px;color:var(--muted);}
+
+        /* BUTTONS */
+        button{
+            width:100%;
+            border:none;
+            border-radius:10px;
+            padding:10px;
+            font-weight:600;
+            cursor:pointer;
+        }
+
+        .buy-btn{
+            background:var(--primary);
+            color:#fff;
+            font-size:13px;
+        }
+
+        .buy-btn:hover{background:var(--primaryHover);}
+
+        .primary{
+            background:var(--primary);
+            color:#fff;
+        }
+
+        .secondary{
+            background:#f3f4f6;
+            color:#111827;
+        }
+
+        .remove-btn{
+            background:#fee2e2;
+            color:var(--danger);
+            width:auto;
+            padding:6px 10px;
+        }
+
+        /* CART */
+        .cart-container{
+            width:min(100%,700px);
+            margin-top:16px;
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:var(--radius-xl);
+            padding:18px;
+        }
+
+        .cart-item{
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:8px;
+            padding:10px 0;
+            border-bottom:1px solid #f3f4f6;
+        }
+
+        .cart-total{
+            font-size:18px;
+            font-weight:700;
+            text-align:right;
+            margin-top:10px;
+            color:var(--success);
+        }
+
+        /* HISTORY */
+        .history-item{
+            border:1px solid var(--border);
+            border-radius:12px;
+            padding:10px;
+            margin-bottom:10px;
+        }
+
+        .history-header{
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:6px;
+        }
+
+        .history-product{font-weight:700;}
+        .history-details{
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:8px;
+            margin-top:8px;
+        }
+
+        .product-card button,
+        .cart-item button,
+        .history-item button,
+        .buy-btn,
+        .primary,
+        .secondary{
+            margin-top: 12px;
+        }
+
+        .disabled-btn,
+        .buy-btn:disabled{
+            background:#d1d5db !important;
+            color:#6b7280 !important;
+            cursor:not-allowed;
+            box-shadow:none;
+            border:1px solid #cbd5e1;
+            opacity:1;
+        }
+
+        .disabled-btn:hover,
+        .buy-btn:disabled:hover{
+            background:#d1d5db !important;
+            color:#6b7280 !important;
+            transform:none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width:1024px){
+            .menu-toggle{display:block;}
+
+            .topbar-right{
+                display:none;
+                position:absolute;
+                top:100%;
+                right:12px;
+                flex-direction:column;
+                background:#fff;
+                padding:10px;
+                border-radius:12px;
+                border:1px solid var(--border);
+                width:220px;
+            }
+
+            .topbar-right.open{display:flex;}
+        }
+
+        @media (max-width:600px){
+            .product-grid{
+                grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+            }
+
+            .container,.cart-container,.section-divider{
+                width:100%;
+            }
+        }
+
+        .container h2{
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .container p{
+            text-align: center;
+            margin-bottom: 18px;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .container > *{
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="logout-link" onclick="logout()">Logout</div>
+        <a href="/home/profile" class="nav-link">🏋️‍♂️ Torna alla Dashboard</a>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMobileMenu(event)">☰</button>
+
+    <div class="topbar-right" id="topbarRight">
+        <div id="topbarSub" class="profile-chip" style="display: none;" onclick="toggleSubDropdown(event)">
+            <span class="profile-name">📋 Il mio abbonamento</span>
+            <div class="profile-dropdown" id="subDropdown">
+                <div class="label">Piano</div>
+                <div class="value" id="subPlan">—</div>
+                <div class="label">Stato</div>
+                <div class="value" id="subStatus">—</div>
+                <div class="label">Scadenza</div>
+                <div class="value" id="subExpiry">—</div>
+            </div>
+        </div>
+
+        <div id="topbarCard" class="profile-chip" style="display: none;" onclick="toggleCardDropdown(event)">
+            <span class="profile-name">💳 La mia tessera</span>
+            <div class="profile-dropdown" id="cardDropdown">
+                <div class="label">ID Tessera</div>
+                <div class="value" id="topId">—</div>
+                <div class="label">Saldo</div>
+                <div class="value" id="topBalance">—</div>
+                <div class="label">Scadenza</div>
+                <div class="value" id="topExpiry">—</div>
+                <hr>
+                <button class="primary" onclick="rechargeCard(event)" style="margin-top: 5px; font-size: 13px; padding: 10px; width: 100%;">
+                    💰 Ricarica Saldo
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-chip" onclick="toggleProfileDropdown(event)">
+            <div class="avatar" id="avatarInitials">?</div>
+            <span class="profile-name" id="profileName">Il mio profilo</span>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="label">ID</div>
+                <div class="value" id="ddId">—</div>
+                <div class="label">Username</div>
+                <div class="value" id="ddUsername">—</div>
+                <div class="label">Email</div>
+                <div class="value" id="ddEmail">—</div>
+                <div class="label">Nome</div>
+                <div class="value" id="ddName">—</div>
+                <div class="label">Età</div>
+                <div class="value" id="ddAge">—</div>
+                <div class="label">Indirizzo</div>
+                <div class="value" id="ddAddress">—</div>
+                <hr>
+                <div class="label">Iscritto dal</div>
+                <div class="value" id="ddCreated">—</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container shopping-container" style="margin-top: 60px;">
+    <h2>🧾 Cronologia Acquisti</h2>
+    <p>I tuoi prodotti acquistati</p>
+
+    <div id="historyContainer">
+        <p>Caricamento cronologia ordini...</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="container shopping-container">
+    <h2>📋 Piani & Abbonamenti</h2>
+    <p>Attiva o rinnova il tuo abbonamento in tempo reale</p>
+    <div id="subscriptionGrid" class="product-grid">
+        <p>Caricamento abbonamenti...</p>
+    </div>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="container shopping-container">
+    <h2>🛍️ Shop Prodotti</h2>
+    <p>Usa il tuo saldo per acquistare prodotti e integratori</p>
+    <div id="productGrid" class="product-grid">
+        <p>Caricamento prodotti...</p>
+    </div>
+</div>
+
+<div class="cart-container" id="cartSection" style="display: none;">
+    <h2>🛒 Il tuo Carrello</h2>
+    <div id="cartList"></div>
+    <div class="cart-total" id="cartTotal">Totale: €0.00</div>
+    <button class="primary" onclick="checkout()">Paga Ora</button>
+    <button class="secondary btn-clear" onclick="clearCart()">Svuota Carrello</button>
+</div>
+
+<script>
+    let cart = [];
+
+    // Gestione dei Dropdown incrociati e menu mobile
+    function toggleMobileMenu(e) {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("topbarRight").classList.toggle("open");
+    }
+
+    function toggleProfileDropdown(e) {
+        e.stopPropagation();
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("profileDropdown").classList.toggle("open");
+    }
+
+    function toggleCardDropdown(e) {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.toggle("open");
+    }
+
+    function toggleSubDropdown(e) {
+        e.stopPropagation();
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.toggle("open");
+    }
+
+    document.addEventListener("click", function() {
+        document.getElementById("profileDropdown").classList.remove("open");
+        document.getElementById("cardDropdown").classList.remove("open");
+        document.getElementById("subDropdown").classList.remove("open");
+        document.getElementById("topbarRight").classList.remove("open");
+    });
+
+    async function loadUserProfile() {
+        const cachedUser = sessionStorage.getItem("user_profile");
+        if (cachedUser) {
+            renderUser(JSON.parse(cachedUser));
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/user/me");
+            if (!res.ok) return;
+            const user = await res.json();
+            sessionStorage.setItem("user_profile", JSON.stringify(user));
+            renderUser(user);
+        } catch (e) { console.error(e); }
+    }
+
+    function renderUser(user) {
+        const initials = user.name && user.lastname
+            ? (user.name[0] + user.lastname[0]).toUpperCase()
+            : (user.username?.[0] || "?").toUpperCase();
+
+        document.getElementById("avatarInitials").innerText = initials;
+        document.getElementById("profileName").innerText = "Il mio profilo";
+        document.getElementById("ddId").innerText = user.id ?? "—";
+        document.getElementById("ddUsername").innerText = user.username ?? "—";
+        document.getElementById("ddEmail").innerText = user.email ?? "—";
+        document.getElementById("ddName").innerText = `${user.name ?? ""} ${user.lastname ?? ""}`.trim() || "—";
+        document.getElementById("ddAge").innerText = user.age ?? "—";
+        document.getElementById("ddAddress").innerText = user.address ?? "—";
+        document.getElementById("ddCreated").innerText = user.createdAt ? new Date(user.createdAt).toLocaleString("it-IT") : "—";
+    }
+
+    // Caricamento Dati Abbonamento Utente (Topbar)
+    async function loadSubscription() {
+        const cachedSub = sessionStorage.getItem("user_subscription");
+        if (cachedSub) {
+            displaySubData(JSON.parse(cachedSub));
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/subscription/mysub");
+            if (res.ok) {
+                const data = await res.json();
+                sessionStorage.setItem("user_subscription", JSON.stringify(data));
+                displaySubData(data);
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function displaySubData(sub) {
+        const topbarSub = document.getElementById("topbarSub");
+        const expiry = new Date(sub.expiresAt);
+
+        if (expiry > new Date() && sub.status === "active") {
+            topbarSub.style.display = "flex";
+            document.getElementById("subPlan").innerText = sub.planName || "Standard";
+            document.getElementById("subStatus").innerText = "🟢 Attivo";
+            document.getElementById("subExpiry").innerText = expiry.toLocaleDateString("it-IT");
+        } else {
+            topbarSub.style.display = "none";
+        }
+    }
+
+    async function loadCard() {
+        const cachedCard = sessionStorage.getItem("user_card");
+        if (cachedCard) {
+            displayCardData(JSON.parse(cachedCard));
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/card/mycard");
+            if (res.ok) {
+                const data = await res.json();
+                sessionStorage.setItem("user_card", JSON.stringify(data));
+                displayCardData(data);
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function displayCardData(card) {
+        const topbarCard = document.getElementById("topbarCard");
+        const expiry = new Date(card.expiresAt);
+
+        if (expiry > new Date()) {
+            topbarCard.style.display = "flex";
+            document.getElementById("topId").innerText = card.id;
+            document.getElementById("topBalance").innerText = `€${card.balance}`;
+            document.getElementById("topExpiry").innerText = expiry.toLocaleDateString("it-IT");
+        } else {
+            topbarCard.style.display = "none";
+        }
+    }
+
+    async function rechargeCard(e) {
+        if (e) e.stopPropagation();
+        const amount = prompt("Inserisci l'importo da ricaricare (es. 50):", "50");
+        if (amount === null) return;
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            alert("Inserisci un importo valido superiore a 0.");
+            return;
+        }
+        try {
+            const res = await apiFetch("/api/v1/card/recharge", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: parsedAmount })
+            });
+            if (res.ok) {
+                const updatedCard = await res.json();
+                alert(`Ricarica di €${parsedAmount} effettuata!`);
+                sessionStorage.setItem("user_card", JSON.stringify(updatedCard));
+                displayCardData(updatedCard);
+            } else {
+                const err = await res.json();
+                alert(`Errore durante la ricarica: ${err.message || 'Riprova più tardi'}`);
+            }
+        } catch (e) {
+            alert("Errore di connessione. Impossibile ricaricare.");
+        }
+    }
+
+    // Caricamento dei Piani Abbonamento disponibili
+    async function loadSubscriptionPlans() {
+        const grid = document.getElementById("subscriptionGrid");
+        try {
+            const res = await apiFetch("/api/v1/plans");
+            if (!res.ok) throw new Error();
+            const plans = await res.json();
+
+            if (plans.length === 0) {
+                grid.innerHTML = "<p>Nessun piano disponibile al momento.</p>";
+                return;
+            }
+
+            grid.innerHTML = plans.map(p => `
+                <div class="product-card">
+                    <div>
+                        <div class="product-name">📋 ${p.name}</div>
+                        <div class="product-price">€${p.price.toFixed(2)}</div>
+                        <div class="product-duration">Durata: ${p.durationDays} giorni</div>
+                    </div>
+                    <button class="buy-btn" onclick="buySubscription(${p.id}, '${p.name.replace(/'/g, "\\'")}')">
+                        Attiva Abbonamento
+                    </button>
+                </div>
+            `).join('');
+        } catch (e) {
+            grid.innerHTML = "<p>Errore nel caricamento dei piani abbonamento.</p>";
+        }
+    }
+
+    // CARICAMENTO CRONOLOGIA ORDINI
+    async function loadPurchaseHistory() {
+        const container = document.getElementById("historyContainer");
+        try {
+            const res = await apiFetch("/api/v1/user/shop/history");
+            if (!res.ok) throw new Error();
+            const purchases = await res.json();
+
+            if (!purchases || purchases.length === 0) {
+                container.innerHTML = "<p>Nessun acquisto effettuato.</p>";
+                return;
+            }
+
+            container.innerHTML = purchases.map(p => `
+                <div class="history-item">
+                    <div class="history-header">
+                        <div class="history-product">${p.productName}</div>
+                        <div class="history-date">
+                            <p>Acquistato il: ${new Date(p.purchasedAt).toLocaleString("it-IT")}</p>
+                        </div>
+                    </div>
+                    <div class="history-details">
+                        <div>Quantità: ${p.quantity}</div>
+                        <div>${p.price.toFixed(2)}€ cad.</div>
+                        <div class="history-total">Totale: ${p.total.toFixed(2)}€</div>
+                    </div>
+                </div>
+            `).join("");
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = "<p>Errore nel caricamento cronologia.</p>";
+        }
+    }
+
+    // Checkout Diretto per l'Abbonamento
+    async function buySubscription(planId, planName) {
+        const cachedCard = sessionStorage.getItem("user_card");
+        if (!cachedCard) {
+            alert("⚠️ Non hai una tessera attiva! Generane o attivane una nella Dashboard prima di abbonarti.");
+            return;
+        }
+
+        if (!confirm(`Confermi l'acquisto del piano "${planName}"?\nL'importo verrà scalato direttamente dal saldo della tessera.`)) {
+            return;
+        }
+
+        try {
+            const res = await apiFetch('/api/v1/subscription/buy', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ planId: planId })
+            });
+
+            if (res.ok) {
+                alert("Abbonamento attivato con successo! 🎉");
+                sessionStorage.removeItem("user_card");
+                sessionStorage.removeItem("user_subscription");
+                await loadCard();
+                await loadSubscription();
+            } else {
+                const errorData = await res.json();
+                alert(`Impossibile completare l'acquisto: ${errorData.message || 'Verifica il tuo saldo'}`);
+            }
+        } catch (e) {
+            alert("Errore di connessione durante l'acquisto dell'abbonamento.");
+        }
+    }
+
+    async function loadProducts() {
+        const grid = document.getElementById("productGrid");
+        try {
+            const res = await apiFetch("/api/v1/products");
+            if (!res.ok) throw new Error();
+            const products = await res.json();
+
+            if (products.length === 0) {
+                grid.innerHTML = "<p>Nessun prodotto disponibile.</p>";
+                return;
+            }
+
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div>
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">€${p.price.toFixed(2)}</div>
+                       <div class="product-stock">
+                            ${p.stockQuantity > 0
+                                ? `Disponibili: ${p.stockQuantity}`
+                                : `🚫 Prodotto esaurito`}
+                        </div>
+                    </div>
+                    <button class="buy-btn"
+                        onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})"
+                        ${p.stockQuantity <= 0 ? 'disabled' : ''}>
+                        ${p.stockQuantity > 0 ? 'Aggiungi al carrello' : 'Esaurito'}
+                    </button>
+                </div>
+            `).join('');
+        } catch (e) {
+            grid.innerHTML = "<p>Errore nel caricamento prodotti.</p>";
+        }
+    }
+
+    function addToCart(id, name, price) {
+        const existingItem = cart.find(item => item.id === id);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ id, name, price, quantity: 1 });
+        }
+        renderCart();
+    }
+
+    function removeFromCart(id) {
+        const item = cart.find(i => i.id === id);
+        const itemName = item ? item.name : "questo prodotto";
+        if (confirm(`Sei sicuro di voler rimuovere tutti i pezzi di "${itemName}" dal carrello?`)) {
+            cart = cart.filter(item => item.id !== id);
+            renderCart();
+        }
+    }
+
+    function clearCart() {
+        if (cart.length > 0 && confirm("Sei sicuro di voler svuotare interamente il carrello?")) {
+            cart = [];
+            renderCart();
+        }
+    }
+
+    function renderCart() {
+        const cartSection = document.getElementById("cartSection");
+        const cartList = document.getElementById("cartList");
+        const cartTotal = document.getElementById("cartTotal");
+
+        if (cart.length === 0) {
+            cartSection.style.display = "none";
+            return;
+        }
+
+        cartSection.style.display = "block";
+        let total = 0;
+
+        cartList.innerHTML = cart.map(item => {
+            total += item.price * item.quantity;
+            return `
+                <div class="cart-item">
+                    <div style="flex-grow: 1;">
+                        <strong>${item.name}</strong><br>
+                        <small>€${item.price.toFixed(2)} / cad.</small>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="remove-btn" style="background: #fee2e2; padding: 5px 12px;" onclick="decreaseQuantity(${item.id})">-</button>
+                        <span style="min-width: 20px; text-align: center; font-weight: bold;">${item.quantity}</span>
+                        <button class="buy-btn" style="padding: 5px 12px;" onclick="addToCart(${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.price})">+</button>
+                        <span style="margin-left: 15px; font-weight: bold; min-width: 70px; text-align: right;">
+                            €${(item.price * item.quantity).toFixed(2)}
+                        </span>
+                        <button class="remove-btn" style="margin-left: 10px;" onclick="removeFromCart(${item.id})">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        cartTotal.innerText = `Totale: €${total.toFixed(2)}`;
+    }
+
+    function decreaseQuantity(id) {
+        const itemIndex = cart.findIndex(item => item.id === id);
+        if (itemIndex > -1) {
+            if (cart[itemIndex].quantity > 1) {
+                cart[itemIndex].quantity -= 1;
+            } else {
+                if (confirm(`Rimuovere ${cart[itemIndex].name} dal carrello?`)) {
+                    cart.splice(itemIndex, 1);
+                }
+            }
+            renderCart();
+        }
+    }
+
+    async function checkout() {
+        const cachedCard = sessionStorage.getItem("user_card");
+        if (!cachedCard) {
+            alert("⚠️ Non hai una tessera attiva! Verrai reindirizzato alla bacheca per generarne una prima di fare acquisti.");
+            window.location.href = "/home/profile";
+            return;
+        }
+
+        if (cart.length === 0) {
+            alert("Il carrello è vuoto!");
+            return;
+        }
+
+        const confirmMessage = `Confermi l'acquisto di ${cart.length} articoli? \nIl totale verrà detratto dal saldo della tua tessera.`;
+        if (!confirm(confirmMessage)) return;
+
+        const orderPayload = {
+            items: cart.map(item => ({
+                id: item.id,
+                quantity: item.quantity
+            }))
+        };
+
+        try {
+            const res = await apiFetch('/api/v1/shop/checkout', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderPayload)
+            });
+
+            if (res.ok) {
+                alert("Acquisto completato con successo! 🎉");
+                cart = [];
+                renderCart();
+                sessionStorage.removeItem("user_card");
+                await loadCard();
+                await loadProducts();
+                await loadPurchaseHistory();
+            } else {
+                const errorData = await res.json();
+                alert(`Si è verificato un errore: ${errorData.message || 'Operazione non riuscita'}`);
+            }
+        } catch (e) {
+            alert("Errore di connessione. Controlla la tua rete e riprova.");
+        }
+    }
+
+    function logout() {
+        if (!confirm("Effettuare il logout?")) return;
+        apiFetch("/auth/logout", { method: "POST"})
+            .then(res => {
+                if (res.ok) {
+                    sessionStorage.clear();
+                    window.location.href = "/auth/login";
+                }
+            });
+    }
+
+
+    async function apiFetch(url, options = {}) {
+
+        const config = {
+            credentials: "include",
+            ...options
+        };
+
+        let response = await fetch(url, config);
+
+        // access token scaduto
+        if (response.status === 401) {
+
+            // tenta refresh
+            const refreshResponse = await fetch("/auth/refresh", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            // refresh riuscito
+            if (refreshResponse.ok) {
+
+                // ripete la request originale
+                response = await fetch(url, config);
+
+            } else {
+
+                // refresh scaduto -> logout
+                sessionStorage.clear();
+                window.location.href = "/auth/login";
+                return;
+            }
+        }
+
+        return response;
+    }
+
+    window.onload = () => {
+        loadUserProfile();
+        loadCard();
+        loadSubscription();
+        loadSubscriptionPlans();
+        loadPurchaseHistory();
+        loadProducts();
+    };
+</script>
+</body>
+</html>

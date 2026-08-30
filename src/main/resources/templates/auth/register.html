@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione</title>
+
+    <style>
+        /* Layout moderno, pulito e "light" coerente con la Home */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(100% 100% at 50% 0%, #e5e7eb 0%, #cbd5e1 100%);
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 0;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Container minimale con effetto glassmorphism soffuso e ombreggiatura profonda */
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px 35px;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03),
+                        0 20px 40px -4px rgba(0, 0, 0, 0.05),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+            text-align: center;
+            width: 100%;
+            max-width: 380px;
+            box-sizing: border-box;
+        }
+
+        /* Uniformiamo tutti gli input con uno stile pulito e bordi discreti */
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #1f2937;
+            outline: none;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        /* Focus degli input elegante e visibile senza alterare il layout */
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            background: #ffffff;
+        }
+
+        /* Placeholder più discreti */
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Pulsanti con transizioni fluide e micro-interazioni moderne */
+        button {
+            width: 100%;
+            padding: 14px 24px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        /* Bottone Registrati (Azione Primaria) */
+        .register {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .register:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+        }
+
+        .register:active {
+            transform: translateY(0);
+        }
+
+        /* Bottone Torna alla Home (Azione Secondaria) */
+        .back {
+            background: #f3f4f6;
+            color: #1f2937;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+        }
+
+        .back:hover {
+            background: #e5e7eb;
+            color: #111827;
+            transform: translateY(-1px);
+        }
+
+        .back:active {
+            transform: translateY(0);
+        }
+
+        /* Elemento per i messaggi di successo o errore */
+        .message {
+            margin-top: 20px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ef4444; /* Colore di default per gli errori, molto leggibile sul bianco */
+            line-height: 1.5;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registrazione</h2>
+
+    <form id="registerForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+
+        <input type="text" id="name" placeholder="Nome" required>
+        <input type="text" id="lastname" placeholder="Cognome" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="address" placeholder="indirizzo" required>
+        <input type="number" id="age" placeholder="Età" required>
+
+        <button type="submit" class="register">Registrati</button>
+    </form>
+
+    <button class="back" onclick="goHome()">Torna alla Home</button>
+
+    <p class="message" id="result"></p>
+</div>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const password = document.getElementById("password").value;
+
+        // 🔴 VALIDAZIONE FRONTEND
+        if (!isValidPassword(password)) {
+            document.getElementById("result").innerText =
+                "Password non valida: deve contenere almeno 1 maiuscola, 1 minuscola, 8 numeri e un carattere speciale";
+            return;
+        }
+
+        const ageValue = document.getElementById("age").value;
+
+        if (!ageValue || isNaN(ageValue)) {
+            document.getElementById("result").innerText = "Invalid age!";
+            return;
+        }
+
+        const data = {
+            username: document.getElementById("username").value,
+            password: password,
+            name: document.getElementById("name").value,
+            lastname: document.getElementById("lastname").value,
+            email: document.getElementById("email").value,
+            address: document.getElementById("address").value,
+            age: parseInt(ageValue)
+        };
+
+        const res = await fetch("/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const resultEl = document.getElementById("result");
+
+        if (res.ok) {
+            const dataRes = await res.json();
+            resultEl.innerText = dataRes.response;
+
+            sessionStorage.clear();
+
+            setTimeout(() => {
+                window.location.href = "/auth/login";
+            }, 1500);
+
+        } else {
+            const errorData = await res.json();
+
+            if (Array.isArray(errorData)) {
+                resultEl.innerText = errorData
+                    .map(e => `${e.field}: ${e.message}`)
+                    .join(" | ");
+            } else {
+                resultEl.innerText = errorData.response || "Registration failed!";
+            }
+        }
+    });
+
+
+    function isValidPassword(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){8,})(?=.*[@#$%^&*!?]).+$/;
+        return regex.test(password);
+    }
+
+    function goHome() {
+        window.location.href = "/";
+    }
+</script>
+
+</body>
+</html>
